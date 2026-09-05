@@ -1,0 +1,61 @@
+Table categories {
+  id int [pk, increment]
+  title varchar(255)
+  image varchar(500)
+  description longtext
+  status varchar(20)
+  position int
+  slug varchar(255)
+  deleted boolean
+  deletedAt timestamp
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table tours {
+  id int [pk, increment]
+  title varchar(255)
+  code varchar(10)
+  images longtext
+  price int
+  discount int
+  information longtext
+  schedule longtext
+  timeStart timestamp
+  stock int
+  status varchar(20)
+  position int
+  slug varchar(255)
+  deleted boolean
+  deletedAt timestamp
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table tours_categories {
+  tourId int [ref: > tours.id]
+  categoryId int [ref: > categories.id]
+}
+
+Table orders {
+  id int [pk, increment]
+  code varchar(10)
+  fullName varchar(50)
+  phone varchar(10)
+  note varchar(500)
+  status varchar(20)
+  deleted boolean
+  deletedAt timestamp
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table orders_item {
+  id int [pk, increment]
+  orderId int [ref: > orders.id]
+  tourId int [ref: > tours.id]
+  quantity int
+  price int
+  discount int
+  timeStart timestamp
+}
