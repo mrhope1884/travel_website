@@ -1,0 +1,126 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum Status {
+    ACTIVE
+    INACTIVE
+}
+
+model User {
+    id        String    @id @default(auto()) @map("_id") @db.ObjectId
+    fullName  String
+    email     String    @unique
+    password  String
+    phone     String?
+    avatar    String?
+    role      Role      @default(USER)
+    status    Status    @default(ACTIVE)
+    deleted   Boolean   @default(false)
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    orders Order[]
+
+    @@map("users")
+}
+
+model Category {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    title       String
+    image       String?
+    description String?
+    status      String    @default("active")
+    position    Int       @default(0)
+    slug        String    @unique
+    deleted     Boolean   @default(false)
+    deletedAt   DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    tours TourCategory[]
+
+    @@map("categories")
+}
+
+model Tour {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    title       String
+    code        String    @unique
+    images      String?
+    price       Int
+    discount    Int       @default(0)
+    information String?
+    schedule    String?
+    timeStart   DateTime
+    stock       Int       @default(0)
+    status      String    @default("active")
+    position    Int       @default(0)
+    slug        String    @unique
+    deleted     Boolean   @default(false)
+    deletedAt   DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    categories TourCategory[]
+    orderItems OrderItem[]
+
+    @@map("tours")
+}
+
+model TourCategory {
+    id         String @id @default(auto()) @map("_id") @db.ObjectId
+    tourId     String @db.ObjectId
+    categoryId String @db.ObjectId
+
+    tour     Tour     @relation(fields: [tourId], references: [id])
+    category Category @relation(fields: [categoryId], references: [id])
+
+    @@unique([tourId, categoryId])
+    @@map("tour_categories")
+}
+
+model Order {
+    id        String    @id @default(auto()) @map("_id") @db.ObjectId
+    code      String    @unique
+    userId    String?
+    fullName  String
+    phone     String
+    note      String?
+    status    String    @default("initial")
+    deleted   Boolean   @default(false)
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    user  User?       @relation(fields: [userId], references: [id])
+    items OrderItem[]
+
+    @@map("orders")
+}
+
+model OrderItem {
+    id        String    @id @default(auto()) @map("_id") @db.ObjectId
+    orderId   String    @db.ObjectId
+    tourId    String    @db.ObjectId
+    quantity  Int
+    price     Int
+    discount  Int       @default(0)
+    timeStart DateTime?
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    tour  Tour  @relation(fields: [tourId], references: [id])
+
+    @@map("orders_item")
+}

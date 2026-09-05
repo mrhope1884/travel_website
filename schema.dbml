@@ -1,3 +1,18 @@
+Table users {
+  id int [pk, increment]
+  fullName varchar(100)
+  email varchar(255) [unique, not null]
+  password varchar(255) [not null]
+  phone varchar(15)
+  avatar varchar(500)
+  role varchar(20) [default: 'customer'] // 'admin', 'staff', 'customer'
+  status varchar(20) [default: 'active'] // 'active', 'inactive'
+  deleted boolean [default: false]
+  deletedAt timestamp
+  createdAt timestamp
+  updatedAt timestamp
+}
+
 Table categories {
   id int [pk, increment]
   title varchar(255)
